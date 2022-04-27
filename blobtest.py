@@ -107,6 +107,20 @@ def resize(ROI,centerX,centerY):
     out = ROI[centerY[0]:centerY[3],centerX[0]:centerX[3]]
     return None #out
 #circle detecting 
+
+def scale(image):
+    img = cv.imread(image)
+    gray= cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+    sift = cv.SIFT_create()
+    kp = sift.detect(gray,None)
+    img=cv.drawKeypoints(gray,kp,img)
+    cv.imwrite('sift_keypoints.jpg',img)
+    img=cv.drawKeypoints(gray,kp,img,flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    cv.imwrite('sift_keypoints.jpg',img)
+    sift = cv.SIFT_create()
+    kp, des = sift.detectAndCompute(gray,None)
+    return img
+
 def cirlcedetecting(ROI):
     #variables for circle blob
     params = cv2.SimpleBlobDetector_Params()
