@@ -27,9 +27,9 @@ def camera():
 
         for rect in rectangle:
             x,y,w,h = cv2.boundingRect(rect)
-            if((w) <= 35 and (w) >= 20 and (h) <= 35 and (h) >= 20):
+            if((w) <= 35 and (w) >= 10 and (h) <= 35 and (h) >= 10):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0,50,255), 1)
-                cv2.putText(frame, str(len(borderbox)) , (50,50), font, fontScale,fontColor,thickness,lineType)
+                #cv2.putText(frame, str(len(borderbox)) , (50,50), font, fontScale,fontColor,thickness,lineType)
                 if(len(borderbox) != 4):
                     borderbox.append(rect)
 
@@ -55,13 +55,13 @@ def answerArea(ROI):
 
     for rect in rectangle:
         x,y,w,h = cv2.boundingRect(rect)
-        if((w) <= 35 and (w) >= 20 and (h) <= 35 and (h) >= 20):
+        if((w) <= 35 and (w) >= 12 and (h) <= 35 and (h) >= 12):
             cv2.rectangle(ROI, (x, y), (x + w, y + h), (255,50,255), 1)
             Middel = cv2.moments(rect)
             cX = int(Middel["m10"] / Middel["m00"])
             cY = int(Middel["m01"] / Middel["m00"])
             cv2.circle(ROI, (cX, cY), 1, (255, 255, 255), -1)
-            cv2.putText(ROI, "centroid" + str(counter), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+            #cv2.putText(ROI, "centroid" + str(counter), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
             counter += 1
             if(len(centerX) != 4):
                 centerX.append(cX)
@@ -76,8 +76,8 @@ def answerArea(ROI):
     #show results
     cv2.imshow("Image",ROI)
     cv2.waitKey(0)
-    answer = ROI[centerY[0]:centerY[3],centerX[0]:centerX[3]]
-    #answer = resize(ROI,centerX,centerY)
+    
+    answer = resize(ROI,centerX,centerY)
     return answer 
 
 def resize(ROI,centerX,centerY): 
@@ -104,43 +104,43 @@ def resize(ROI,centerX,centerY):
     # Compute the perspective transform M
     #M = cv2.getPerspectiveTransform(input_pts,output_pts)
     #out = cv2.warpPerspective(img,M,(maxWidth, maxHeight),flags=cv2.INTER_LINEAR)
+    
     out = ROI[centerY[0]:centerY[3],centerX[0]:centerX[3]]
-    return None #out
+    out = cv2.resize(out, (1000,500), interpolation= cv2.INTER_LINEAR)
+    return out
 #circle detecting 
-def cirlcedetecting(ROI):
+def cirlcedetecting(image):
     #variables for circle blob
     params = cv2.SimpleBlobDetector_Params()
     params.filterByArea = True
-    params.minArea = 0
-    params.maxArea = 120
+    params.minArea = 60
+    params.maxArea = 300
     #filter by how Circular the circles are
     params.filterByCircularity = True
     params.minCircularity = 0.1
     #convexity
     params.filterByConvexity = True
-    params.minConvexity = 0.1
+    params.minConvexity = 0.4
     #threshhold
-    params.thresholdStep = 5
-    params.minThreshold = 20
+    #params.thresholdStep = 5
+    params.minThreshold = 5
     params.maxThreshold = 255
     #shape
     params.filterByInertia = True
-    params.minInertiaRatio = 0.1
+    params.minInertiaRatio = 0.01
     #blob detector :D
     detector = cv2.SimpleBlobDetector_create(params)
 
     #convert frame
-    bilateral_filtered_image = cv2.bilateralFilter(ROI, 5, 120, 255)
-    edge_detected_image = cv2.Canny(bilateral_filtered_image, 50, 255)
-    cv2.imshow("bilateral_filtered_image", bilateral_filtered_image)
-    cv2.imshow("edge_detected_image", edge_detected_image)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    cv2.imshow("gray blobs",gray)
     cv2.waitKey(0)
     #detect circles
-    keypoints = detector.detect(edge_detected_image)
+    keypoints = detector.detect(gray)
     #print(str(keypoints[0].pt[0]))
     #draw around blobs
     blank = np.zeros((1, 1))
-    circle = cv2.drawKeypoints(ROI, keypoints, blank, (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    circle = cv2.drawKeypoints(image, keypoints, blank, (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     return circle
 
 def getAnswer():
@@ -148,10 +148,8 @@ def getAnswer():
 
 img = camera()
 area = answerArea(img)
-cv2.imshow("area", area)
-cv2.waitKey(0)
 circles = cirlcedetecting(area)
-cv2.imshow("Circular Blobs Only", circles)
+cv2.imshow("blobs", circles)
 #remove results
 cv2.waitKey(0)
 cv2.destroyAllWindows()
