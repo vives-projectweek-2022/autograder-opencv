@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+import argparse
 
 #draw function global variables
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -40,8 +42,9 @@ def camera():
 #area of intrest
 def answerArea(ROI):
     #variables
-    borderX = []
-    borderY = []
+    centerX = []
+    centerY = []
+    counter = 0
     #filter
     gray = cv2.cvtColor(ROI, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
@@ -52,44 +55,74 @@ def answerArea(ROI):
 
     for rect in rectangle:
         x,y,w,h = cv2.boundingRect(rect)
-        if((w) <= 35 and (w) >= 18 and (h) <= 35 and (h) >= 18):
+        if((w) <= 35 and (w) >= 20 and (h) <= 35 and (h) >= 20):
             cv2.rectangle(ROI, (x, y), (x + w, y + h), (255,50,255), 1)
             Middel = cv2.moments(rect)
             cX = int(Middel["m10"] / Middel["m00"])
             cY = int(Middel["m01"] / Middel["m00"])
-            #cv2.circle(ROI, (cX, cY), 5, (255, 255, 255), -1)
-            #cv2.putText(ROI, "centroid", (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
-            if(len(borderX) != 4):
-                borderX.append(cX)
-                borderY.append(cY)
+            cv2.circle(ROI, (cX, cY), 1, (255, 255, 255), -1)
+            cv2.putText(ROI, "centroid" + str(counter), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+            counter += 1
+            if(len(centerX) != 4):
+                centerX.append(cX)
+                centerY.append(cY)
     
     #sort small to big
-    borderX.sort()
-    borderY.sort()
+    centerX.sort()
+    centerY.sort()
+    for i in range(len(centerX)):
+        print("X"+ str(i) +" :" + str(centerX[i]))
+        print("Y"+ str(i) +" :" + str(centerY[i]))
     #show results
     cv2.imshow("Image",ROI)
     cv2.waitKey(0)
-    answer = ROI[borderY[0]:borderY[3],borderX[0]:borderX[3]]
-    cv2.imshow("answer Image",answer)
+    answer = ROI[centerY[0]:centerY[3],centerX[0]:centerX[3]]
+    #answer = resize(ROI,centerX,centerY)
     return answer 
 
+def resize(ROI,centerX,centerY): 
+    #pt_A = [centerX[0],centerY[0]]
+    #pt_B = [centerX[1],centerY[1]]
+    #pt_C = [centerX[2],centerY[2]]
+    #pt_D = [centerX[3],centerY[3]]
+    
+    # Here, I have used L2 norm. You can use L1 also.
+    #width_AD = np.sqrt(((pt_A[0] - pt_D[0]) ** 2) + ((pt_A[1] - pt_D[1]) ** 2))
+    #width_BC = np.sqrt(((pt_B[0] - pt_C[0]) ** 2) + ((pt_B[1] - pt_C[1]) ** 2))
+    #maxWidth = max(int(width_AD), int(width_BC))
+
+
+    #height_AB = np.sqrt(((pt_A[0] - pt_B[0]) ** 2) + ((pt_A[1] - pt_B[1]) ** 2))
+    #height_CD = np.sqrt(((pt_C[0] - pt_D[0]) ** 2) + ((pt_C[1] - pt_D[1]) ** 2))
+    #maxHeight = max(int(height_AB), int(height_CD))
+    # Apply Perspective Transform Algorithm
+    #input_pts = np.float32([pt_A, pt_B, pt_C, pt_D])
+    #output_pts = np.float32([[0, 0],
+                            #[0, maxHeight - 1],
+                            #[maxWidth - 1, maxHeight - 1],
+                            #[maxWidth - 1, 0]])
+    # Compute the perspective transform M
+    #M = cv2.getPerspectiveTransform(input_pts,output_pts)
+    #out = cv2.warpPerspective(img,M,(maxWidth, maxHeight),flags=cv2.INTER_LINEAR)
+    out = ROI[centerY[0]:centerY[3],centerX[0]:centerX[3]]
+    return None #out
 #circle detecting 
 def cirlcedetecting(ROI):
     #variables for circle blob
     params = cv2.SimpleBlobDetector_Params()
-    params.filterByArea = False
+    params.filterByArea = True
     params.minArea = 0
     params.maxArea = 120
     #filter by how Circular the circles are
     params.filterByCircularity = True
-    params.minCircularity = 0.2
+    params.minCircularity = 0.1
     #convexity
     params.filterByConvexity = True
     params.minConvexity = 0.1
     #threshhold
-    #params.thresholdStep = 5
-    #params.minThreshold = 120
-    #params.maxThreshold = 255
+    params.thresholdStep = 5
+    params.minThreshold = 20
+    params.maxThreshold = 255
     #shape
     params.filterByInertia = True
     params.minInertiaRatio = 0.1
@@ -99,8 +132,8 @@ def cirlcedetecting(ROI):
     #convert frame
     bilateral_filtered_image = cv2.bilateralFilter(ROI, 5, 120, 255)
     edge_detected_image = cv2.Canny(bilateral_filtered_image, 50, 255)
-    cv2.imshow("Circular Blobs Only", bilateral_filtered_image)
-    cv2.imshow("Circular Blobs Only", edge_detected_image)
+    cv2.imshow("bilateral_filtered_image", bilateral_filtered_image)
+    cv2.imshow("edge_detected_image", edge_detected_image)
     cv2.waitKey(0)
     #detect circles
     keypoints = detector.detect(edge_detected_image)
@@ -109,6 +142,9 @@ def cirlcedetecting(ROI):
     blank = np.zeros((1, 1))
     circle = cv2.drawKeypoints(ROI, keypoints, blank, (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     return circle
+
+def getAnswer():
+    return None
 
 img = camera()
 area = answerArea(img)
