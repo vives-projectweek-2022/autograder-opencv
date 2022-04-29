@@ -8,63 +8,69 @@ from printer import printer
 from machinevision import MachineVision
 import numpy as np
 
-machinevision = MachineVision()
+class Menu:
+    def __init__(self):
+        self.__teacherBlobs = []
+        self.__teacherCircles = []
+        self.__studentBlobs = []
+        self.__studentCircles = []
 
-teacherBlobs = null
-teacherCircles = null
-studentBlobs = null
-studentCircles = null
+        self.__answerKey = []
+        self.__studentAnswers = []
+        self.__studentName = "Testing student"
+        self.__grade = 0
+        self.__machinevision = MachineVision()
+        self.__resultsChecker = ResultsChecker(self.__answerKey, self.__studentAnswers)
 
-answerKey = null
-studentAnswers = null
-studentName = ""
-grade = null
+    def updateStudent():
+        self.resetScore()
+        #studentName = menu.add.text_input
 
-def updateStudent():
-    pass
-    #studentName = menu.add.text_input
+    def updateAnswerKey():
+        self.__machineVision.getResults()
+        self.__teacherCircles = self.__machineVision.getCirlces() 
+        self.__teacherBlobs = self.__machineVision.getBlobs()
+        self.__answerKey = Sorter(self.__teacherCircles, self.__teacherBlobs)
 
-def updateAnswerKey():
-    machineVision.getResults()
-    teacherCircles = machineVision.getCirlces() 
-    teacherBlobs = machineVision.getBlobs()
-    answerKey = Sorter(teacherCircles, teacherBlobs)
+    def updateStudentAnswers():
+        self.__machineVision.getResults()
+        self.__studentCircles = self.__machineVision.getCirlces()
+        self.__studentBlobs = self.__machineVision.getBlobs()
+        self.__studentAnswers = Sorter(self.__studentCircles, self.__studentBlobs)
 
-def updateStudentAnswers():
-    machineVision.getResults()
-    studentCircles = machineVision.getCirlces()
-    studentBlobs = machineVision.getBlobs()
-    studentAnswers = Sorter(studentCircles, studentBlobs)
+    def gradeGuessCorrection():
+        self.__grade = self.__resultsChecker.correctWithGuessCorrection()
 
-def gradeGuessCorrection():
-    resultsChecker = ResultsChecker(answerKey studentAnswers)
-    grade = resultsChecker.correctWithGuessCorrection()
+    def gradeNormalCorrection():
+        self.__grade = self.__resultsChecker.correctNormal()
 
-def gradeNormalCorrection():
-    resultsChecker = ResultsChecker(answerKey studentAnswers)
-    grade = resultsChecker.correctNormal()
+    def resetScore():
+        self.__grade = 0
 
-cap = cv2.VideoCapture(0) 
-pygame.init()
-size = (600,400)
+    def printScore():
+        self.__resultsChecker.printResults("ACM0", self.__studentName)
 
-surface = pygame.display.set_mode((780, 540), pygame.RESIZABLE)
-menu = pygame_menu.Menu('Welcome', 780, 540,theme=pygame_menu.themes.THEME_SOLARIZED)
+    cap = cv2.VideoCapture(0) 
+    pygame.init()
+    size = (600,400)
 
-def video():
-    while (True):
-        _, frame = cap.read()
-        cv2.imshow('frame', frame)
-        k = cv2.waitKey(5) & 0xFF
-        if k == 27:
-            break
+    surface = pygame.display.set_mode((780, 540), pygame.RESIZABLE)
+    menu = pygame_menu.Menu('Welcome', 780, 540,theme=pygame_menu.themes.THEME_SOLARIZED)
 
-menu.add.button('Camera', video)
-menu.add.button('New Student', updateStudent)
-menu.add.button('Upload answer key', updateAnswerKey)
-menu.add.button('Upload student answers', updateStudentAnswers)
-menu.add.button('Grade with guess correction', gradeGuessCorrection)
-menu.add.button('Grade with normal correction', gradeNormalCorrection)
-menu.add.button('Print Scores', )
-menu.add.button('Exit', pygame_menu.events.EXIT)
-menu.mainloop(surface)
+    def video():
+        while (True):
+            _, frame = cap.read()
+            cv2.imshow('frame', frame)
+            k = cv2.waitKey(5) & 0xFF
+            if k == 27:
+                break
+
+    menu.add.button('Camera', video)
+    menu.add.button('New Student', updateStudent)
+    menu.add.button('Upload answer key', updateAnswerKey)
+    menu.add.button('Upload student answers', updateStudentAnswers)
+    menu.add.button('Grade with guess correction', gradeGuessCorrection)
+    menu.add.button('Grade with normal correction', gradeNormalCorrection)
+    menu.add.button('Print Scores', printScore)
+    menu.add.button('Exit', pygame_menu.events.EXIT)
+    menu.mainloop(surface)
