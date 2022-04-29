@@ -36,9 +36,13 @@ def updateStudentAnswers():
     studentBlobs = machineVision.getBlobs()
     studentAnswers = Sorter(studentCircles, studentBlobs)
 
-def grade():
+def gradeGuessCorrection():
+    resultsChecker = ResultsChecker(answerKey studentAnswers)
+    grade = resultsChecker.correctWithGuessCorrection()
 
-
+def gradeNormalCorrection():
+    resultsChecker = ResultsChecker(answerKey studentAnswers)
+    grade = resultsChecker.correctNormal()
 
 cap = cv2.VideoCapture(0) 
 pygame.init()
@@ -59,7 +63,8 @@ menu.add.button('Camera', video)
 menu.add.button('New Student', updateStudent)
 menu.add.button('Upload answer key', updateAnswerKey)
 menu.add.button('Upload student answers', updateStudentAnswers)
-menu.add.button('Grade!', grade)
+menu.add.button('Grade with guess correction', gradeGuessCorrection)
+menu.add.button('Grade with normal correction', gradeNormalCorrection)
 menu.add.button('Print Scores', )
 menu.add.button('Exit', pygame_menu.events.EXIT)
 menu.mainloop(surface)
