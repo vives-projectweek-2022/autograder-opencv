@@ -18,6 +18,8 @@ class ResultsChecker:
         for i in range(0, self.__numberOfQuestions):
             if self.__answerKey[i] == self.__studentAnswers[i]:
                	self.__totalScore += 1
+            elif self.__studentAnswers[i] == 0:
+                self.__answerKey += 0
             else:
                 self.__totalScore -= point_reduction
 

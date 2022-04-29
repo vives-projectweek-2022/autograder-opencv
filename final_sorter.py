@@ -190,7 +190,7 @@ class Sorter:
 
         # this returns the blob matrix sorted
         return sortedFull
-
+ 
     def sortAllCirkels(self, numberOfChunks):
         sortedY = self.sortY()
         chunks = self.chunkPerN(sortedY, numberOfChunks)
@@ -225,7 +225,7 @@ class Sorter:
         for row in range(0, len(answers)):
             for column in range(0, len(answers[0])):
                 if answers[row,column] == 1:
-                    answerArray[row] = column
+                    answerArray[row] = column + 1
         return answerArray
 
     def getSortedAnswerArray(self, numberOfOptions, pixelDifference=10):

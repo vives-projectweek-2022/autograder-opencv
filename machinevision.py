@@ -118,9 +118,9 @@ class MachineVision:
         output = self.__area.copy()
         gray = cv2.cvtColor(ROI, cv2.COLOR_BGR2GRAY)
         # detect circles in the image
-        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 4,
-                                param1=110, param2=12,
-                                minRadius=4, maxRadius=10)
+        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 6,
+                                param1=150, param2=12,
+                                minRadius=4, maxRadius=14)
         # ensure at least some circles were found
 
         if circles is not None:
@@ -134,11 +134,17 @@ class MachineVision:
                 cv2.rectangle(output, (x , y ), (x , y), (0, 128, 255), 1)
             # show the output image
             cv2.imshow("Detected circles", np.hstack([ROI, output]))
+            cv2.waitKey(0)
         else:
             print("Did not detect any circles")
             cv2.destroyAllWindows()
-            testrun()
-        return circles
+        while(len(circles) != 100):
+            cv2.imshow("Detected circles", np.hstack([ROI, output]))
+            print("Did not detect all circles " + str(len(circles)))
+            cv2.destroyAllWindows()
+            self.getResults()
+            
+        self.__cirlces = np.array(circles)
         
     #circle detecting 
     def blobdetecting(self):
@@ -162,20 +168,27 @@ class MachineVision:
         blank = np.zeros((1, 1))
         blobs = cv2.drawKeypoints(image, keypoints, blank, (0, 0, 255),cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
-        matrixkey = np.array()
+        matrixkey = []
         for i in range(0,len(keypoints)):
             matrixkey.append([round(keypoints[i].pt[0]), round(keypoints[i].pt[1])])
         cv2.imshow("blobs", blobs)
-        return matrixkey
+        self.__blobs = np.array(matrixkey)
 
     def getImage(self):
         #get image and area of intrest
         img = self.camera()
         area = self.answerArea(img)
 
-vision = MachineVision()
-img = vision.getImage()
-circles = vision.detect_all_circles()
-blobs = vision.blobdetecting()
-print(circles)
-print(blobs)
+    def getResults(self):
+        self.getImage()
+        self.detect_all_circles()
+        self.blobdetecting()
+        
+    def getBlobs(self):
+        return self.__blobs
+    
+    def getCirlces(self):
+        return self.__cirlces
+    
+    def showCircles(self,image):
+        cv2.imshow()

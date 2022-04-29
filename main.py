@@ -130,20 +130,20 @@ blobData = np.array([[31, 83],
 # from blobtest import blob
 # circles and blobs = via function from blobs
 machineVision = MachineVision()
-machineVision.getImage()
-allcirlces = machineVision.detect_all_circles()# return matrix with circles 
-allblobs = machineVision.blobdetecting()# return matrix blobs
+machineVision.getResults()
+allcirlces = machineVision.getCirlces()# return matrix with circles 
+allblobs = machineVision.getBlobs()# return matrix blobs
 
 
 # Create new sorter object and give circle and blob data
-answerKey = Sorter(allcirlces, allblobs)
+answerKey = Sorter(circleData, blobData)
 
 # Let the sorter create an answers array
-teacherCopy = answerKey.getSortedAnswerArray(5, 10)
+teacherCopy = answerKey.getSortedAnswerArray(5, 12)
 
 studentAnswers = Sorter(allcirlces, allblobs)
 
-studentCopy = studentAnswers.getSortedAnswerArray(5, 10)
+studentCopy = studentAnswers.getSortedAnswerArray(5, 12)
 
 resultsChecker = ResultsChecker(teacherCopy, studentCopy)
 score = resultsChecker.correctNormal()
