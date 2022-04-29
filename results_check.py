@@ -1,33 +1,36 @@
 from printer import printer
 
 class ResultsChecker:
-    def __init__(self, correction):
-        self.__correctArray[] = correction
-        self.__numberOfQuestions = len(self.__correctArray)
+    def __init__(self, answerKey, studentAnswers):
+        self.__answerKey = answerKey
+        self.__numberOfQuestions = len(self.__answerKey)
+        self.__studentAnswers = studentAnswers
         self.__totalScore = 0
 
-    def correctNormal(self, answers):
-        for i in range(self.__numberOfQuestions):
-            if self.__correctArray[i] == answers[i]:
-                self.__totalScore += 1
-        
+    def correctNormal(self):
+        for i in range(0, self.__numberOfQuestions):
+            if self.__answerKey[i] == self.__studentAnswers[i]:
+               	self.__totalScore += 1
         return self.__totalScore
     
-    def correctWithGuessCorrection(self, answers):
+    def correctWithGuessCorrection(self):
         point_reduction = (1/(self.__numberOfQuestions - 1))
-        for i in range(self.__numberOfQuestions):
-            if self.__correctArray[i] == answers[i]:
-                self.__totalScore += 1
-            elif answers[i] == 0:
-                self.__totalScore += 0
-            elif self.__correctArray[i] != answers[i]:
+        for i in range(0, self.__numberOfQuestions):
+            if self.__answerKey[i] == self.__studentAnswers[i]:
+               	self.__totalScore += 1
+            else:
                 self.__totalScore -= point_reduction
+
         return self.__totalScore
 
     def printResults(self, printerPort, studentName):
-        resultString = "{}".format(self.__totalScore) + "/" + "{}".format(self.__numberOfQuestions)
         my_printer = printer.Printer(printerPort)
-        my_printer.print_text("The score for {} is:").format(studentName)
-        my_printer.print_text(resultString)     
-        return console.log("Printing: {}").format("The score for {} is:").format(studentName)   
+        my_printer.print_text("The score for " + studentName + " is:")
+        my_printer.print_text(str(self.__totalScore) + "/" + str(self.__numberOfQuestions))     
+        print("Printing") 
+
+    def resetScore(self):
+        self.__totalScore = 0
+
+
             
