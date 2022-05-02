@@ -35,4 +35,5 @@ class ResultsChecker:
         self.__totalScore = 0
 
 
+
             

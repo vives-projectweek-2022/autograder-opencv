@@ -119,8 +119,8 @@ class MachineVision:
         gray = cv2.cvtColor(ROI, cv2.COLOR_BGR2GRAY)
         # detect circles in the image
         circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 6,
-                                param1=150, param2=12,
-                                minRadius=4, maxRadius=14)
+                                param1=130, param2=12,
+                                minRadius=4, maxRadius=13)
         # ensure at least some circles were found
 
         if circles is not None:
