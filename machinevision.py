@@ -9,6 +9,7 @@ class MachineVision:
     def __init__(self):
         self.__maxVal = 45
         self.__minVal = 19
+        self.__img = 0
         self.__area = 0
         self.__cirlces = 0
         self.__blobs = 0
@@ -38,12 +39,13 @@ class MachineVision:
             cv2.imshow("camera frame",frame)
             k = cv2.waitKey(5) & 0xFF
             if(k == 27):#and len(borderbox) == 4
-                ROI = frame
-                return ROI
+                self.__img = frame
+                return self.__img
                 
     #area of intrest
-    def answerArea(self,ROI):
-        image = ROI.copy()
+    def answerArea(self):
+        ROI = self.__img
+        image = self.__img.copy()
         #variables
         centerX = []
         centerY = []
@@ -61,7 +63,7 @@ class MachineVision:
         for rect in rectangle:
             x,y,w,h = cv2.boundingRect(rect)
             if((w) <= self.__maxVal and (w) >= self.__minVal and (h) <= self.__maxVal and (h) >= self.__minVal):
-                cv2.rectangle(ROI, (x, y), (x + w, y + h), (255,50,255), 1)
+                cv2.rectangle(image, (x, y), (x + w, y + h), (255,50,255), 1)
                 Middel = cv2.moments(rect)
                 cX = int(Middel["m10"] / Middel["m00"])
                 cY = int(Middel["m01"] / Middel["m00"])
@@ -75,7 +77,7 @@ class MachineVision:
         centerX.sort()
         centerY.sort()
         #show results
-        cv2.imshow("Image",ROI)
+        cv2.imshow("Image",image)
         cv2.waitKey(0)
         
         self.__area = self.resize(image,centerX,centerY)
@@ -118,9 +120,9 @@ class MachineVision:
         output = self.__area.copy()
         gray = cv2.cvtColor(ROI, cv2.COLOR_BGR2GRAY)
         # detect circles in the image
-        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 6,
-                                param1=130, param2=12,
-                                minRadius=4, maxRadius=13)
+        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 12,
+                                param1=110, param2=15,
+                                minRadius=5, maxRadius=10)
         # ensure at least some circles were found
 
         if circles is not None:
@@ -138,13 +140,13 @@ class MachineVision:
         else:
             print("Did not detect any circles")
             cv2.destroyAllWindows()
-        while(len(circles) != 100):
+        if(len(circles) != 100):
             cv2.imshow("Detected circles", np.hstack([ROI, output]))
             print("Did not detect all circles " + str(len(circles)))
             cv2.destroyAllWindows()
             self.getResults()
-            
-        self.__cirlces = np.array(circles)
+        else:
+            self.__cirlces = np.array(circles)
         
     #circle detecting 
     def blobdetecting(self):
@@ -159,7 +161,7 @@ class MachineVision:
         params.minArea = 20
         params.maxArea = 350
         params.filterByInertia = True
-        params.minInertiaRatio = 0.1
+        params.minInertiaRatio = 0.01
         #blob detector :D
         detector = cv2.SimpleBlobDetector_create(params)
         keypoints = detector.detect(image)
@@ -172,15 +174,12 @@ class MachineVision:
         for i in range(0,len(keypoints)):
             matrixkey.append([round(keypoints[i].pt[0]), round(keypoints[i].pt[1])])
         cv2.imshow("blobs", blobs)
+        cv2.waitKey(0)
         self.__blobs = np.array(matrixkey)
 
-    def getImage(self):
-        #get image and area of intrest
-        img = self.camera()
-        area = self.answerArea(img)
-
     def getResults(self):
-        self.getImage()
+        self.camera()
+        self.answerArea()
         self.detect_all_circles()
         self.blobdetecting()
         
@@ -189,6 +188,3 @@ class MachineVision:
     
     def getCirlces(self):
         return self.__cirlces
-    
-    def showCircles(self,image):
-        cv2.imshow()

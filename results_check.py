@@ -1,20 +1,34 @@
 from printer import printer
 
 class ResultsChecker:
-    def __init__(self, answerKey, studentAnswers):
+    def __init__(self,options):
+        self.__totalScore = 0
+        self.__answerKey = 0
+        self.__numberOfQuestions = 0
+        self.__numberOfOptions = options
+        self.__studentAnswers = 0
+
+    def setAnswerKey(self, answerKey):
         self.__answerKey = answerKey
         self.__numberOfQuestions = len(self.__answerKey)
+    def getAnswerKey(self):
+        return self.__answerKey
+
+    def setStudentAnswers(self,studentAnswers):
         self.__studentAnswers = studentAnswers
-        self.__totalScore = 0
+    def getStudentAnswers(self):
+        return self.__studentAnswers
 
     def correctNormal(self):
+        self.__totalScore = 0
         for i in range(0, self.__numberOfQuestions):
             if self.__answerKey[i] == self.__studentAnswers[i]:
                	self.__totalScore += 1
         return self.__totalScore
     
     def correctWithGuessCorrection(self):
-        point_reduction = (1/(self.__numberOfQuestions - 1))
+        self.__totalScore = 0
+        point_reduction = (1/(self.__numberOfOptions - 1))
         for i in range(0, self.__numberOfQuestions):
             if self.__answerKey[i] == self.__studentAnswers[i]:
                	self.__totalScore += 1
@@ -33,6 +47,13 @@ class ResultsChecker:
 
     def resetScore(self):
         self.__totalScore = 0
+
+    def resetMatrixStudent(self):
+        self.__studentAnswers = 0
+        
+    def resetMatrixAnswer(self):
+        self.__answerKey = 0
+        self.__numberOfQuestions = 0
 
 
 

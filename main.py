@@ -148,6 +148,6 @@ studentCopy = studentAnswers.getSortedAnswerArray(5, 12)
 resultsChecker = ResultsChecker(teacherCopy, studentCopy)
 score = resultsChecker.correctNormal()
 print(score)
-resultsChecker.printResults("ACM0", "Sirine")
+resultsChecker.printResults("ACM0", "Autograder")
 
 
