@@ -36,14 +36,19 @@ class ResultsChecker:
                 self.__answerKey += 0
             else:
                 self.__totalScore -= point_reduction
+        if self.__totalScore < 0:
+            self.__totalScore = 0
 
         return self.__totalScore
 
     def printResults(self, printerPort, studentName):
         my_printer = printer.Printer(printerPort)
-        my_printer.print_text("The score for " + studentName + " is:")
+        my_printer.print_text("The score for ")
+        my_printer.print_text(studentName)
+        my_printer.print_text(" is: ")
         my_printer.print_text(str(self.__totalScore) + "/" + str(self.__numberOfQuestions))     
         print("Printing") 
+        
 
     def resetScore(self):
         self.__totalScore = 0
