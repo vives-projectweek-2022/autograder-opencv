@@ -74,3 +74,41 @@ conda install numpy -y
 pip install matplotlib
 ```
 
+## how to use the menu
+
+### new student
+
+```text
+creates a new student 
+reset student answer matrix
+```
+
+### upload answer key
+
+```text
+uses the given page to create a matrix containing the correct answers  
+```
+
+### upload student answer
+
+```text
+upload the student answer to a matrix 
+```
+
+### Grade with guess correction
+
+```text
+compare the answer matrix with the student matrix to get the correct amount of answers with giscorrection
+```
+
+### Grade with normal correction
+
+```text
+compare the answer matrix with the student matrix to get the correct amount of answers
+```
+
+### print score
+
+```text
+prints the score of the student
+```
