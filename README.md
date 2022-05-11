@@ -61,7 +61,7 @@ python --version
 #### create environment
 
 ```bash
-conda create —name opencv
+conda create --name opencv
 activate opencv
 ```
 
